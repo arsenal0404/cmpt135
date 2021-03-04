@@ -152,49 +152,69 @@ public:
 class Datetime_bot : public Chatbot {
 
   string botName;
-  vector<string> reply;
+  vector<string> standardReply;
+  bool currentDateReply;
 
-  bool searchDateOrTime(const string& s){
+  void hasDateOrTime(const string& s){
 
     string word;
 
     for (char c : s){
-
       if (c >= 32 && c <= 64){
 
-        
+        if (word == "DATE" || word == "TIME"){
+          this->currentDateReply = true;
+        }
 
+        word = "";
       } else {
+        char a = toupper(c);
 
-        word.push_back(c);
-
+        word.push_back(a);
       }
-      
     }
-
+    this->currentDateReply = false;
   }
+
+  //foudn this function for getting the time for time
+  //https://stackoverflow.com/questions/997946/how-to-get-current-time-and-date-in-c
+  //credit goes to TrungTN 
+  const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+}
+
 
 public:
 
   Datetime_bot(const string& name, vector<string> replies) 
-    : botName(name), reply(replies){ };
+    : botName(name), standardReply(replies), currentDateReply(false){ };
 
   string name() const{ return botName;}
 
   void tell (const string& s ){
 
-
+    hasDateOrTime(s);
 
   }
 
   string get_reply(){
 
-
-
+    if (currentDateReply){
+      return "The current date and time is: " + currentDateTime();
+    } else {
+      int randNum = ((rand() % standardReply.size() - 1) + 1);
+      this->currentDateReply = false;
+      return standardReply.at(randNum);
+    }
   }
-
-
-
 };
 
 // converse is a helper functuin that you can use if you like. You are free to
