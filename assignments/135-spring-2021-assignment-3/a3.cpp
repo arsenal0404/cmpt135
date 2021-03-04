@@ -142,7 +142,7 @@ public:
 
   string get_reply(){ 
     string input;
-    cin >> input;
+    getline(cin, input);
     reply = input;
     return input;
   }
@@ -153,27 +153,13 @@ class Datetime_bot : public Chatbot {
 
   string botName;
   vector<string> standardReply;
-  bool currentDateReply;
+  string input;
 
-  void hasDateOrTime(const string& s){
-
-    string word;
-
-    for (char c : s){
-      if (c >= 32 && c <= 64){
-
-        if (word == "DATE" || word == "TIME"){
-          this->currentDateReply = true;
-        }
-
-        word = "";
-      } else {
-        char a = toupper(c);
-
-        word.push_back(a);
-      }
+  string upperCase(string &input) {
+    for (int i = 0; i < input.length(); i++) {
+      input[i] = toupper(input[i]);
     }
-    this->currentDateReply = false;
+    return input;
   }
 
   //foudn this function for getting the time for time
@@ -195,25 +181,25 @@ class Datetime_bot : public Chatbot {
 public:
 
   Datetime_bot(const string& name, vector<string> replies) 
-    : botName(name), standardReply(replies), currentDateReply(false){ };
+    : botName(name), standardReply(replies){ };
 
   string name() const{ return botName;}
 
   void tell (const string& s ){
 
-    hasDateOrTime(s);
+    input = s;
 
   }
 
   string get_reply(){
 
-    if (currentDateReply){
+    if (upperCase(input).find("DATE") != string::npos || upperCase(input).find("TIME") != string::npos){
       return "The current date and time is: " + currentDateTime();
     } else {
       int randNum = ((rand() % standardReply.size() - 1) + 1);
-      this->currentDateReply = false;
       return standardReply.at(randNum);
     }
+
   }
 };
 
@@ -235,6 +221,22 @@ void converse(Chatbot* a, Chatbot* b, int max_turns = 50) {
   } // for
 }
 
+// void converseUser(Chatbot* a, Chatbot* b, int max_turns = 50) {
+//   for(int turn = 1; turn <= max_turns; turn++) {
+//     string a_msg = a->get_reply();
+//     cout << "(" << turn << ") " << a->name() << ": " << a_msg << "\n";
+    
+//     turn++;
+//     if (turn > max_turns) return;
+
+//     b->tell(a_msg);
+//     string b_msg = b->get_reply();
+
+//     cout << "(" << turn << ") " << b->name() << ": " << b_msg << "\n";
+//     a->tell(b_msg);
+//   } // for
+// }
+
 int main() {
   //
   // ... put code for testing your functions here ...
@@ -242,10 +244,13 @@ int main() {
   srand(time(nullptr));
 
   // Chatbot* mBot = new Mirror_bot("repeato", "repeato is ready to go!");
-  Chatbot* rBot = new Random_bot("rando", "dog_sounds.txt");
+  // Chatbot* rBot = new Random_bot("rando", "dog_sounds.txt");
   Chatbot* uBot = new User_bot("stan");
+  Chatbot* dBot = new Datetime_bot("deetee", {"Ask me about the date or time!", 
+                                              "I know the date and time!"});
 
-  converse(rBot, uBot);
+
+  converse(uBot, dBot);
 
 
 
