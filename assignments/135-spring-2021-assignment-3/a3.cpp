@@ -160,7 +160,15 @@ class Datetime_bot : public Chatbot {
 
     for (char c : s){
 
-      
+      if (c >= 32 && c <= 64){
+
+        
+
+      } else {
+
+        word.push_back(c);
+
+      }
       
     }
 
