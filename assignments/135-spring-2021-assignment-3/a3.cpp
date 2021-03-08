@@ -193,12 +193,118 @@ public:
 
   string get_reply(){
 
+    //Checks if the words "date" or "time" are in the string.
     if (upperCase(input).find("DATE") != string::npos || upperCase(input).find("TIME") != string::npos){
       return "The current date and time is: " + currentDateTime();
     } else {
       int randNum = ((rand() % standardReply.size() - 1) + 1);
       return standardReply.at(randNum);
     }
+
+  }
+};
+
+class Turing_bot : public Chatbot {
+
+  string botName;
+  string reply;
+  vector<string> emotionalSupport;
+
+  vector<string> readResponseFromFile(string fileName){
+
+    ifstream file;
+    file.open(fileName);
+
+    if (file.fail()){
+      cmpt::error("File not found\n");
+    }
+
+    string line;
+    vector<string> inputList;
+    while(getline(file, line)){
+
+      inputList.push_back(line);
+
+    }
+
+    if (inputList.empty()){
+      cmpt::error("Vector is empty!\n");
+    }
+
+    return inputList;
+
+  }
+
+  const std::string currentDateTime() {
+    time_t     now = time(0);
+    struct tm  tstruct;
+    char       buf[80];
+    tstruct = *localtime(&now);
+    // Visit http://en.cppreference.com/w/cpp/chrono/c/strftime
+    // for more information about date/time format
+    strftime(buf, sizeof(buf), "%Y-%m-%d.%X", &tstruct);
+
+    return buf;
+  }
+
+  string upperCase(string &input) {
+    for (int i = 0; i < input.length(); i++) {
+      input[i] = toupper(input[i]);
+    }
+    return input;
+  }
+
+  bool contains(string search){
+
+    if (upperCase(reply).find(upperCase(search)) != string::npos){
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+public: 
+
+  Turing_bot(const string&name)
+  : botName(name){ 
+
+    emotionalSupport = readResponseFromFile("emotional_support.txt");
+
+  };
+
+  string name() const { return botName;}
+
+  void tell (const string& s){
+
+    reply = s;
+
+  }
+
+  string get_reply(){
+
+    string response;
+
+    if (contains("hello") || contains("hey")){
+      response = "Greetings adventurer";
+    } else if (contains("weather")){
+      response = "Knowing Vancouver, or should I say Raincover, it is probably raining";
+    } else if (contains("name") && contains("your")){
+      response = "My name is " + botName + ". I would ask for your name, "
+      + "but I am really bad with names and forget anyways";
+    } else if (contains("how") && contains("are") && contains("you")){
+      response = "Pretty down bad. Spent a long time trying to create a simple bot";
+    } else if (contains("what") && contains("games") && contains("play")){
+      response = "Just some league of legends, minecraft, and a new game called valheim";
+    } else if (contains("am") && contains("sad")){
+      int randNum = ((rand() % emotionalSupport.size() - 1) + 1);
+      response = emotionalSupport.at(randNum);
+    } else if (contains("date") || contains("time")){
+      response = "The current date and time is: " + currentDateTime();
+    } else {
+      response = "I didn't understand that, wanna type it again!";
+    }
+
+    return response;
 
   }
 };
@@ -246,12 +352,12 @@ int main() {
   // Chatbot* mBot = new Mirror_bot("repeato", "repeato is ready to go!");
   // Chatbot* rBot = new Random_bot("rando", "dog_sounds.txt");
   Chatbot* uBot = new User_bot("stan");
-  Chatbot* dBot = new Datetime_bot("deetee", {"Ask me about the date or time!", 
-                                              "I know the date and time!"});
+  // Chatbot* dBot = new Datetime_bot("deetee", {"Ask me about the date or time!", 
+  //                                             "I know the date and time!"});
+  Chatbot* tBot = new Turing_bot("Alan");
 
 
-  converse(uBot, dBot);
-
+  converse(uBot, tBot);
 
 
 }
