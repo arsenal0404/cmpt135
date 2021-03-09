@@ -209,6 +209,7 @@ class Turing_bot : public Chatbot {
   string botName;
   string reply;
   vector<string> emotionalSupport;
+  string response;
 
   vector<string> readResponseFromFile(string fileName){
 
@@ -263,6 +264,21 @@ class Turing_bot : public Chatbot {
     }
   }
 
+  void addToFile(string fileName, string s){
+
+    ofstream file;
+    file.open(fileName);
+    
+    if (file.fail()){
+      cmpt::error("File not found!\n");
+    }
+
+    file << s;
+
+    file.close();
+
+  }
+
 public: 
 
   Turing_bot(const string&name)
@@ -282,8 +298,6 @@ public:
 
   string get_reply(){
 
-    string response;
-
     if (contains("hello") || contains("hey")){
       response = "Greetings adventurer";
     } else if (contains("weather")){
@@ -301,7 +315,8 @@ public:
     } else if (contains("date") || contains("time")){
       response = "The current date and time is: " + currentDateTime();
     } else {
-      response = "I didn't understand that, wanna type it again!";
+
+      response = "I didn't understand that, do you mind repeating that!";
     }
 
     return response;

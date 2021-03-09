@@ -64,7 +64,6 @@ int** readFromFile(const string& fileName){
 		two_d_array[i] = getRowFromString(line);
 		i++;
 
-
 	}
 
 	inputFile.close();
