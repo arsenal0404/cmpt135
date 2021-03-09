@@ -56,11 +56,7 @@ int** readFromFile(const string& fileName){
 
 
 
-
 	}
-
-		
-
 
 
 }
