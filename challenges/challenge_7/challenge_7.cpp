@@ -20,34 +20,25 @@ using namespace std;
 // ... add any helper functions (write them yourself!) here ...
 //
 
-int* getRowFromString(const string& s){
+int* getRowFromString(const string& s, int columns){
 
-	int row[10];
-	string number;
-	int i = 0;
-	while(true){
+	int* row = new int[columns];
 	
-		for(char ch : s){
-			if (ch == ' '){
-				row[i] = stoi(number);
-				number = "";
-			} else {
-				number.push_back(ch);
-			}
+	int i = 0;
 
+	for(char ch : s){
+
+		if (ch != 32){
+			row[i] = ch - '0';
 			i++;
+		} 
 
-		}	
-
-		break;
-
-	}
+	}	
 
 	return row;
-
 }
 
-int** readFromFile(const string& fileName){
+void readFromFile(const string& fileName, int (&two_d_array)[1000][500], int columns){
 
 	ifstream inputFile;
 	inputFile.open(fileName);
@@ -56,19 +47,58 @@ int** readFromFile(const string& fileName){
 		cmpt::error("Fail failed to open. Possibly wrong file name!");
 	}
 
-	int two_d_array[4][10];
 	string line;
 	int i = 0;
 	while(getline(inputFile, line)){
 
-		two_d_array[i] = getRowFromString(line);
+		int* arr = getRowFromString(line, columns);
+		for (int j = 0; j < columns; j++){
+			two_d_array[i][j] = arr[j];
+		}
 		i++;
+		delete[] arr;
+		arr = NULL;
+		
+	}
+
+	
+	inputFile.close();
+	
+}
+
+int* sumOfColumns(int (&two_d_array)[1000][500], int rows, int columns){
+
+	int* columnSum = new int[columns];
+	int currentSum;
+
+	for (int i = 0; i < columns; i++){
+		currentSum = 0;
+		for (int j = 0; j < rows; j++){
+
+			currentSum += two_d_array[j][i]; 
+
+		}
+		columnSum[i] = currentSum;
+	}
+
+	return columnSum;
+}
+
+void findGreatestSum(int *columnSums, int columns){
+	int indexOfGreatestSum;
+	int greatestSum = 0;
+
+	for (int i = 0; i < columns; i++){
+
+		if (greatestSum <= columnSums[i]){
+			indexOfGreatestSum = i;
+			greatestSum = columnSums[i];
+		}
 
 	}
 
-	inputFile.close();
-	return two_d_array;
-
+	cout << "The column with the greatest sum is: " << indexOfGreatestSum + 1 << "\n";
+	cout << "The sum of that column is: " << greatestSum << "\n";
 
 
 }
@@ -76,15 +106,30 @@ int** readFromFile(const string& fileName){
 int main() {
 	cout << "Challenge 7 ...\n";
 	// ...
+	int rows = 1000;
+	int columns = 500;
+	int two_d_array[1000][500];
+	readFromFile("bits_1000_500.txt", two_d_array, columns);
 
-	int two_d_array[1000][500] = readFromFile("test.txt");
+	// for (int i = 0; i < rows; i++){
+	// 	for (int j = 0; j < columns; j++){
 
-	for (int i = 0; i < 4; i++){
-		for (int j = 0; i < 10; i++){
+	// 		cout << two_d_array[i][j] << " ";
 
-			cout << two_d_array[i][j];
-		}
+	// 	}
 
-		cout << "\n";
+	// 	cout << endl;
+	// }
+
+	int* columnSums = sumOfColumns(two_d_array, rows, columns);
+	cout << "--------------------------------\n";
+
+	for (int i = 0; i < columns; i++){
+		cout << "Sum of column " << i << ": " << columnSums[i] << endl;
 	}
+
+	findGreatestSum(columnSums, columns);
+
+	delete[] columnSums;
+
 }
