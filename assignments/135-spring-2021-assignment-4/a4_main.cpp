@@ -10,10 +10,10 @@ int main () {
     sum_strange_test();
     all_same_test();
     all_digits_test();
-//     trim_test();
-//     sum_neg_test();
-//     min_vec_test();
-//     count_test();
-//     zip_test();
-//     join_test();
+    trim_test();
+    sum_neg_test();
+    min_vec_test();
+    count_test();
+    zip_test();
+    join_test();
 }
